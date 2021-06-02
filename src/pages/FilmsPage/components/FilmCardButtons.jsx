@@ -18,7 +18,7 @@ const DeleteButton = ({ film }) => {
   const { deleteFilm } = useContext(FilmContext);
 
   return (
-    <span onClick={() => deleteFilm(film)} class="ui red basic button">
+    <span onClick={() => deleteFilm(film)} className="ui red basic button">
       <i className="ui icon check" /> YES
     </span>
   );

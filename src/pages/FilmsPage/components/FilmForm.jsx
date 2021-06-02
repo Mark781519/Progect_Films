@@ -1,6 +1,6 @@
-import React, { Component, createRef } from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
-import ImageLoader from "components/ImageLoader";
+import UploadImage from "components/UploadImage";
 import FormMessage from "components/FormMessage";
 
 const initialData = {
@@ -17,11 +17,8 @@ const initialData = {
 class FilmForm extends Component {
   state = {
     data: initialData,
-    photo: "",
     errors: {},
   };
-
-  photoRef = createRef();
 
   componentDidMount() {
     if (this.props.film._id) {
@@ -40,15 +37,11 @@ class FilmForm extends Component {
     return null;
   }
 
-  updatePhoto = (e) => {
-    const file = this.photoRef.current.files && this.photoRef.current.files[0];
-    if (file) {
-      const img = "/img/" + file.name;
-      this.setState({
-        data: { ...this.state.data, img },
-        errors: { ...this.state.errors, img: "" },
-      });
-    }
+  updatePhoto = (img) => {
+    this.setState({
+      data: { ...this.state.data, img },
+      errors: { ...this.state.errors, img: "" },
+    });
   };
 
   handleStringChange = (e) =>
@@ -131,15 +124,6 @@ class FilmForm extends Component {
                   name="img"
                 />
                 {errors.img && <FormMessage>{errors.img}</FormMessage>}
-                <div className="inp-file">
-                  <label htmlFor="photo">Photo</label>
-                  <input
-                    ref={this.photoRef}
-                    onChange={this.updatePhoto}
-                    type="file"
-                    id="photo"
-                  />
-                </div>
               </div>
               {/*  img END */}
               {/*  description START */}
@@ -165,12 +149,7 @@ class FilmForm extends Component {
             {/* ten column END */}
             {/*  IMG START */}
             <div className="six wide column">
-              <ImageLoader
-                src={data.img}
-                alt={data.title}
-                fallbackImg="http://via.placeholder.com/250x250"
-                className="ui image imgfit"
-              />
+              <UploadImage img={data.img} updatePhoto={this.updatePhoto} />
             </div>
             {/*  IMG END */}
           </div>
