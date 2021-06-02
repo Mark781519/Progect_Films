@@ -6,6 +6,7 @@ import FilmForm from "pages/FilmsPage/components/FilmForm";
 import { films } from "data";
 import FilmContext from "contexts/FilmContext";
 import TopNavigation from "components/TopNavigation";
+import axios from "axios";
 
 class App extends Component {
   state = {
@@ -13,6 +14,11 @@ class App extends Component {
     showAddForm: false,
     selectedFilm: {},
   };
+
+  componentDidMount() {
+    axios.get("/api/test").then((res) => console.log(res.data.mes));
+    this.setState({ films: this.sortFilms(films) });
+  }
 
   sortFilms = (films) =>
     sortWith([descend(prop("featured")), ascend(prop("title"))], films);
@@ -23,10 +29,6 @@ class App extends Component {
         films.map((f) => (f._id === id ? { ...f, featured: !f.featured } : f))
       ),
     }));
-
-  componentDidMount() {
-    this.setState({ films: this.sortFilms(films) });
-  }
 
   showForm = (e) => this.setState({ showAddForm: true, selectedFilm: {} });
   hideForm = (e) => this.setState({ showAddForm: false, selectedFilm: {} });
