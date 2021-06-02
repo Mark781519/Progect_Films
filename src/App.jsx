@@ -1,12 +1,10 @@
 import React, { Component } from "react";
 import { prop, sortWith, ascend, descend } from "ramda";
-import { generate as id } from "shortid";
 import FilmsList from "pages/FilmsPage/components/FilmsList";
 import FilmForm from "pages/FilmsPage/components/FilmForm";
-import { films } from "data";
 import FilmContext from "contexts/FilmContext";
 import TopNavigation from "components/TopNavigation";
-import axios from "axios";
+import api from "api";
 
 class App extends Component {
   state = {
@@ -16,8 +14,9 @@ class App extends Component {
   };
 
   componentDidMount() {
-    axios.get("/api/test").then((res) => console.log(res.data.mes));
-    this.setState({ films: this.sortFilms(films) });
+    api.films
+      .fetchAll()
+      .then((films) => this.setState({ films: this.sortFilms(films) }));
   }
 
   sortFilms = (films) =>
@@ -39,12 +38,14 @@ class App extends Component {
       showAddForm: true,
     });
 
-  addFilm = (film) =>
-    this.setState(({ films, showAddForm, selectedFilm }) => ({
-      films: this.sortFilms([...films, { ...film, _id: id() }]),
-      showAddForm: false,
-      selectedFilm: {},
-    }));
+  addFilm = (filmData) =>
+    api.films.create(filmData).then((film) =>
+      this.setState(({ films, showAddForm, selectedFilm }) => ({
+        films: this.sortFilms([...films, film]),
+        showAddForm: false,
+        selectedFilm: {},
+      }))
+    );
 
   updateFilm = (film) =>
     this.setState(({ films, showAddFilm, selectedFilm }) => ({
