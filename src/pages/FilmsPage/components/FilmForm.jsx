@@ -18,6 +18,7 @@ class FilmForm extends Component {
   state = {
     data: initialData,
     errors: {},
+    loading: false,
   };
 
   componentDidMount() {
@@ -86,16 +87,21 @@ class FilmForm extends Component {
     const errors = this.validate(this.state.data);
     this.setState({ errors });
     if (Object.keys(errors).length === 0) {
+      this.setState({ loading: true });
+
       this.props.saveFilm(this.state.data);
-      this.setState({ data: initialData, errors: {} });
     }
   };
 
   render() {
-    const { data, errors } = this.state;
+    const { data, errors, loading } = this.state;
 
     return (
-      <form onSubmit={this.handleSubmit} className="ui form">
+      <form
+        onSubmit={this.handleSubmit}
+        aria-label="film-form"
+        className={`ui form ${loading ? "loading" : ""}`}
+      >
         <div className="ui grid mb-3">
           {/* two column START */}
           <div className="two column row">

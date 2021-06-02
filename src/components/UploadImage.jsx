@@ -48,8 +48,6 @@ const UploadImage = ({ img, updatePhoto }) => {
     formData.append("file", file);
     await run(
       axios.post("/api/upload", formData).then(async (res) => {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
         updatePhoto(res.data.file);
         setRenderImg(res.data.file);
         setFile(null);
