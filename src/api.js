@@ -12,6 +12,9 @@ const api = {
     delete: (film) => axios.delete(`/api/films/${film._id}`),
     fetchById: (f) => f,
   },
+  users: {
+    create: (user) => axios.post("/api/users", { user }),
+  },
 };
 
 export default api;
