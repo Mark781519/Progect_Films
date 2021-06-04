@@ -89,7 +89,12 @@ class FilmForm extends Component {
     if (Object.keys(errors).length === 0) {
       this.setState({ loading: true });
 
-      this.props.saveFilm(this.state.data);
+      this.props.saveFilm(this.state.data).catch((err) =>
+        this.setState({
+          errors: err.response.data.errors,
+          loading: false,
+        })
+      );
     }
   };
 
