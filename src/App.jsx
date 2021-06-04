@@ -6,18 +6,23 @@ import FilmForm from "pages/FilmsPage/components/FilmForm";
 import FilmContext from "contexts/FilmContext";
 import TopNavigation from "components/TopNavigation";
 import api from "api";
+import { FullSpinner } from "styles/app";
 
 class App extends Component {
   state = {
     films: [],
     showAddForm: false,
     selectedFilm: {},
+    loading: true,
   };
 
   componentDidMount() {
-    api.films
-      .fetchAll()
-      .then((films) => this.setState({ films: this.sortFilms(films) }));
+    api.films.fetchAll().then((films) =>
+      this.setState({
+        films: this.sortFilms(films),
+        loading: false,
+      })
+    );
   }
 
   sortFilms = (films) =>
@@ -60,11 +65,13 @@ class App extends Component {
   saveFilm = (film) => (film._id ? this.updateFilm(film) : this.addFilm(film));
 
   deleteFilm = (film) =>
-    this.setState(({ films, selectedFilm, showAddForm }) => ({
-      films: this.sortFilms(films.filter((f) => f._id !== film._id)),
-      selectedFilm: {},
-      showAddForm: false,
-    }));
+    api.films.delete(film).then(() => {
+      this.setState(({ films, selectedFilm, showAddForm }) => ({
+        films: this.sortFilms(films.filter((f) => f._id !== film._id)),
+        selectedFilm: {},
+        showAddForm: false,
+      }));
+    });
 
   value = {
     toggleFeatured: this.toggleFeatured,
@@ -73,7 +80,7 @@ class App extends Component {
   };
 
   render() {
-    const { films, showAddForm, selectedFilm } = this.state;
+    const { films, showAddForm, selectedFilm, loading } = this.state;
     const cls = showAddForm ? "ten" : "sixteen";
 
     return (
@@ -93,7 +100,7 @@ class App extends Component {
             )}
 
             <div className={`${cls} wide column`}>
-              <FilmsList films={films} />
+              {loading ? <FullSpinner /> : <FilmsList films={films} />}
             </div>
           </div>
         </div>
