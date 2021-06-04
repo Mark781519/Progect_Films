@@ -10,6 +10,7 @@ const api = {
         .put(`/api/films/${film._id}`, { film })
         .then((res) => res.data.film),
     delete: (film) => axios.delete(`/api/films/${film._id}`),
+    fetchById: (f) => f,
   },
 };
 

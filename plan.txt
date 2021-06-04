@@ -136,6 +136,7 @@ Film        |  film/:id
 2. Создать 
 - компонент pages/FilmsPage/components/FilmDetails.jsx
  в котором вывести детальную  информацию  о фильме. 
+
   URL страницы -> /film/ID
 - в компоненте pages/FilmsPage/components/FilmCard.jsx  создать
   ссылку на страницу FilmDetails (например title обернуть в Link) 
