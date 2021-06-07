@@ -1,12 +1,11 @@
-import { memo, useContext } from "react";
+import { memo } from "react";
 import PropTypes from "prop-types";
 import Featured from "components/Featured";
 import FilmCardButtons from "pages/FilmsPage/components/FilmCardButtons";
-import UserContext from "contexts/UserContext";
-import { useParams } from "react-router";
+import { useUserState } from "contexts/UserContext";
 
 const FilmCard = ({ film }) => {
-  const { user } = useContext(UserContext);
+  const user = useUserState();
 
   const actionUser = (
     <div class="extra content">

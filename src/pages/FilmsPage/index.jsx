@@ -65,33 +65,30 @@ class FilmsPage extends Component {
   render() {
     const { films, loading } = this.state;
     const cls = this.props.location.pathname === "/films" ? "sixteen" : "ten";
+    const { user } = this.props;
 
     return (
       <FilmContext.Provider value={this.value}>
         <div className="ui stackable grid">
-          <UserContext.Consumer>
-            {({ user }) =>
-              user.token && user.role === "admin" ? (
-                <div className="six wide column">
-                  <Route path="/films/new">
-                    <FilmForm film={{}} saveFilm={this.saveFilm} />
-                  </Route>
+          {user.token && user.role === "admin" ? (
+            <div className="six wide column">
+              <Route path="/films/new">
+                <FilmForm film={{}} saveFilm={this.saveFilm} />
+              </Route>
 
-                  <Route
-                    path="/films/edit/:_id"
-                    render={({ match }) => (
-                      <FilmForm
-                        saveFilm={this.saveFilm}
-                        film={_find(films, { _id: match.params._id }) || {}}
-                      />
-                    )}
+              <Route
+                path="/films/edit/:_id"
+                render={({ match }) => (
+                  <FilmForm
+                    saveFilm={this.saveFilm}
+                    film={_find(films, { _id: match.params._id }) || {}}
                   />
-                </div>
-              ) : (
-                <Redirect to="/films" />
-              )
-            }
-          </UserContext.Consumer>
+                )}
+              />
+            </div>
+          ) : (
+            <Redirect to="/films" />
+          )}
 
           <div className={`${cls} wide column`}>
             {loading ? <FullSpinner /> : <FilmsList films={films} />}
