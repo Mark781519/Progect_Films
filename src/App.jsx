@@ -3,6 +3,8 @@ import { Route } from "react-router-dom";
 import TopNavigation from "components/TopNavigation";
 import HomePage from "pages/HomePage";
 import { FullSpinner } from "styles/app";
+import { setAuthorizationHeader } from "api";
+
 const FilmsPage = lazy(() => import("pages/FilmsPage"));
 const SignupPage = lazy(() => import("pages/SignupPage"));
 const LoginPage = lazy(() => import("pages/LoginPage"));
@@ -18,7 +20,17 @@ class App extends Component {
     message: "",
   };
 
-  logout = () => this.setState({ user: { token: null } });
+  login = (token) => {
+    this.setState({ user: { token, role: "user" } });
+    localStorage.filmsToken = token;
+    setAuthorizationHeader(token);
+  };
+
+  logout = () => {
+    this.setState({ user: { token: null, role: "" } });
+    setAuthorizationHeader();
+    delete localStorage.filmsToken;
+  };
 
   setMessage = (message) => this.setState({ message });
 
@@ -28,7 +40,7 @@ class App extends Component {
     return (
       <Suspense fallback={<FullSpinner />}>
         <div className="ui container mt-3">
-          <TopNavigation logout={this.logout} isAuth={user.token} />
+          <TopNavigation logout={this.logout} isAuth={!!user.token} />
 
           {message && (
             <div className="ui info message">
@@ -49,7 +61,9 @@ class App extends Component {
           <Route path="/signup">
             <SignupPage setMessage={this.setMessage} />
           </Route>
-          <Route path="/login" component={LoginPage} />
+          <Route path="/login">
+            <LoginPage login={this.login} />
+          </Route>
         </div>
       </Suspense>
     );
