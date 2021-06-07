@@ -198,8 +198,8 @@ db.users.find().pretty();
 Сейчас это выглядит так 
 
 // --------------------------------------- 
-<UserContext.Consumer>
-  {({user}) => user.token && user.role === "admin" ? (
+
+  { user.token && user.role === "admin" ? (
       <div className="six wide column">
         <Route path="/films/new">
           <FilmForm film={{}} saveFilm={this.saveFilm} />
@@ -210,7 +210,7 @@ db.users.find().pretty();
       <Redirect to="/films" />
     )
   }
-</UserContext.Consumer>
+
 ---------------------------------------------//
 
 Задача - убрать UserContext.Consumer и тернарный условный оператор
