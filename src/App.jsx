@@ -20,6 +20,13 @@ class App extends Component {
     message: "",
   };
 
+  componentDidMount() {
+    if (localStorage.filmsToken) {
+      this.setState({ user: { token: localStorage.filmsToken, role: "user" } });
+      setAuthorizationHeader(localStorage.filmsToken);
+    }
+  }
+
   login = (token) => {
     this.setState({ user: { token, role: "user" } });
     localStorage.filmsToken = token;
