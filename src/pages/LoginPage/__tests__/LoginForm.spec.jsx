@@ -9,10 +9,29 @@ const buildFormData = (overiddes) => ({
   ...overiddes,
 });
 
-test("should correct render LoginForm", () => {
+test("should ivoke handleChange", () => {
   render(
     <Router>
       <LoginForm />
+    </Router>
+  );
+  const { email, password } = buildFormData();
+
+  const emailEl = screen.getByLabelText(/email/i);
+  const passwordEl = screen.getByLabelText(/password/i);
+
+  fireEvent.change(emailEl, { target: { value: email } });
+  fireEvent.change(passwordEl, { target: { value: password } });
+
+  expect(emailEl).toHaveValue(email);
+  expect(passwordEl).toHaveValue(password);
+});
+
+test("should invoke submit", () => {
+  const submit = jest.fn(() => Promise.resolve());
+  render(
+    <Router>
+      <LoginForm submit={submit} />
     </Router>
   );
   const { email, password } = buildFormData();
@@ -23,9 +42,8 @@ test("should correct render LoginForm", () => {
 
   fireEvent.change(emailEl, { target: { value: email } });
   fireEvent.change(passwordEl, { target: { value: password } });
-
-  expect(emailEl).toHaveValue(email);
-  expect(passwordEl).toHaveValue(password);
-
   fireEvent.click(btnEl);
+
+  expect(submit).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveBeenCalledWith({ email, password });
 });
