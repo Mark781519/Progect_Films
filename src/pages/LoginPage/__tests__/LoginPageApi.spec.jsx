@@ -3,12 +3,11 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import LoginPage from "pages/LoginPage";
 import { UserContextProvider } from "contexts/UserContext";
-import mockApi from "api";
+import { rest } from "msw";
+import { setupServer } from "msw/node";
 
 const fakeData = { email: "test@com.ua", password: "secret" };
-
 const mockToken = "12345";
-jest.mock("api");
 
 const mockLogin = jest.fn();
 jest.mock("contexts/UserContext", () => ({
@@ -21,9 +20,21 @@ jest.mock("react-router-dom", () => ({
   useHistory: () => mockHistory,
 }));
 
-test("should correct render", async () => {
-  mockApi.users.login.mockResolvedValueOnce(mockToken);
+const server = setupServer(
+  rest.post("/api/auth", async (req, res, ctx) => {
+    return res(ctx.json({ token: mockToken }));
+  })
+);
 
+beforeAll(() => {
+  server.listen();
+});
+afterAll(() => {
+  server.close();
+  jest.restoreAllMocks();
+});
+
+test("should correct render", async () => {
   render(
     <Router>
       <LoginPage />
@@ -40,12 +51,9 @@ test("should correct render", async () => {
   expect(emailEl).toHaveValue(fakeData.email);
   expect(passwordEl).toHaveValue(fakeData.password);
 
-  await waitFor(() => userEvent.click(btnEl));
+  userEvent.click(btnEl);
 
-  expect(mockApi.users.login).toHaveBeenCalledTimes(1);
-  expect(mockApi.users.login).toHaveBeenCalledWith(fakeData);
-
-  expect(mockLogin).toHaveBeenCalledTimes(1);
+  await waitFor(() => expect(mockLogin).toHaveBeenCalledTimes(1));
   expect(mockLogin).toHaveBeenCalledWith(mockToken);
 
   expect(mockHistory.push).toHaveBeenCalledTimes(1);
