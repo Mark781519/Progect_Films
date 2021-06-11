@@ -1,3 +1,14 @@
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
+import { AppProviders } from "contexts";
+import FilmsPage from "pages/FilmsPage";
+
+import { rest } from "msw";
+import { setupServer } from "msw/node";
+
 const mockFilms = [
   {
     _id: "1",
@@ -10,5 +21,35 @@ const mockFilms = [
     description: "Three robbers",
   },
 ];
+const mockUserState = { token: "12345", role: "admin" };
 
-test("should render admin buttons", () => {});
+jest.mock("contexts/UserContext", () => ({
+  ...jest.requireActual("contexts/UserContext"),
+  useUserState: () => mockUserState,
+}));
+
+const server = setupServer(
+  rest.get("/api/authfilms", async (req, res, ctx) => {
+    return res(ctx.json({ films: mockFilms }));
+  })
+);
+
+beforeAll(() => server.listen());
+afterAll(() => server.close());
+
+test("should render admin buttons", async () => {
+  render(<FilmsPage />, { wrapper: AppProviders });
+  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i));
+  expect(screen.queryByTestId("admin-buttons")).toBeInTheDocument();
+});
+
+test("should render spinner", async () => {
+  server.use(
+    rest.get("/api/authfilms", async (req, res, ctx) => {
+      return res(ctx.json({ films: [] }));
+    })
+  );
+  render(<FilmsPage />, { wrapper: AppProviders });
+  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i));
+  expect(screen.queryByLabelText("message")).toBeInTheDocument();
+});
