@@ -3,11 +3,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import LoginPage from "pages/LoginPage";
 import { UserContextProvider } from "contexts/UserContext";
-import { rest } from "msw";
-import { setupServer } from "msw/node";
+import users from "test/user";
 
 const fakeData = { email: "test@com.ua", password: "secret" };
-const mockToken = "12345";
+const mockToken = users[0].token;
 
 const mockLogin = jest.fn();
 jest.mock("contexts/UserContext", () => ({
@@ -19,20 +18,6 @@ jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useHistory: () => mockHistory,
 }));
-
-const server = setupServer(
-  rest.post("/api/auth", async (req, res, ctx) => {
-    return res(ctx.json({ token: mockToken }));
-  })
-);
-
-beforeAll(() => {
-  server.listen();
-});
-afterAll(() => {
-  server.close();
-  jest.restoreAllMocks();
-});
 
 test("should correct render", async () => {
   render(
