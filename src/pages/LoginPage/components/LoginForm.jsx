@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { Link } from "react-router-dom";
+import isEmail from "validator/lib/isEmail";
 import FormMessage from "components/FormMessage";
 
 const initialData = {
@@ -21,7 +22,7 @@ class LoginForm extends Component {
 
   validate(data) {
     const errors = {};
-    if (!data.email) errors.email = "Email cannot be blank";
+    if (!isEmail(data.email)) errors.email = "Email is not correct";
     if (!data.password) errors.password = "Password cannot be blank";
 
     return errors;
@@ -45,7 +46,11 @@ class LoginForm extends Component {
     const { data, errors, loading } = this.state;
     const cls = loading ? "ui form loading" : "ui form";
     return (
-      <form className={cls} onSubmit={this.handleSubmit}>
+      <form
+        data-testid="login-form"
+        className={cls}
+        onSubmit={this.handleSubmit}
+      >
         <div className={errors.email ? "error field" : "field"}>
           <label htmlFor="email">Email</label>
           <input
