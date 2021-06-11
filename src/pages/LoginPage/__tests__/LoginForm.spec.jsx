@@ -1,5 +1,6 @@
 import { MemoryRouter as Router } from "react-router-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import LoginForm from "pages/LoginPage/components/LoginForm";
 import faker from "faker";
 
@@ -40,9 +41,9 @@ test("should invoke submit", () => {
   const passwordEl = screen.getByLabelText(/password/i);
   const btnEl = screen.getByText(/login/i);
 
-  fireEvent.change(emailEl, { target: { value: email } });
-  fireEvent.change(passwordEl, { target: { value: password } });
-  fireEvent.click(btnEl);
+  userEvent.type(emailEl, email);
+  userEvent.type(passwordEl, password);
+  userEvent.click(btnEl);
 
   expect(submit).toHaveBeenCalledTimes(1);
   expect(submit).toHaveBeenCalledWith({ email, password });
