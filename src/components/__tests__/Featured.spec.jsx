@@ -1,16 +1,22 @@
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import FilmContext from "contexts/FilmContext";
 import Featured from "components/Featured";
+import { AppProviders } from "contexts";
 
 const propsData = { film: { _id: "1", featured: true } };
-const toggleFeatured = jest.fn();
+
+const mockToggleFeatured = jest.fn();
+
+jest.mock("contexts/FilmContext", () => ({
+  ...jest.requireActual("contexts/FilmContext"),
+  useToggleFeatured: () => mockToggleFeatured,
+}));
 
 const RenderComponent = (props) => {
   return (
-    <FilmContext.Provider value={{ toggleFeatured }}>
+    <AppProviders>
       <Featured {...props} />
-    </FilmContext.Provider>
+    </AppProviders>
   );
 };
 
@@ -24,8 +30,8 @@ test("should render correclty", () => {
 
   userEvent.click(spanEl);
 
-  expect(toggleFeatured).toHaveBeenCalledTimes(1);
-  expect(toggleFeatured).toHaveBeenCalledWith("1");
+  expect(mockToggleFeatured).toHaveBeenCalledTimes(1);
+  expect(mockToggleFeatured).toHaveBeenCalledWith("1");
 
   propsData.film.featured = false;
   rerender(<RenderComponent {...propsData} />);
