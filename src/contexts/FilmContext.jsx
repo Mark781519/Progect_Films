@@ -2,7 +2,6 @@ import { createContext, useContext, useState, useCallback } from "react";
 import { prop, sortWith, ascend, descend } from "ramda";
 import _find from "lodash/find";
 import api from "api";
-import { FaLockOpen } from "react-icons/fa";
 
 export const FilmStateContext = createContext();
 export const FilmDispatchContext = createContext();
@@ -92,7 +91,6 @@ export const useToggleFeatured = () => {
 
   return function (_id) {
     const updatedFilm = _find(films, { _id });
-    updatedFilm.featured = !updatedFilm.featured;
-    updateFilm(updatedFilm);
+    updateFilm({ ...updatedFilm, featured: !updatedFilm.featured });
   };
 };
