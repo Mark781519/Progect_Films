@@ -1,9 +1,26 @@
-import { memo } from "react";
-import PropTypes from "prop-types";
+import { memo, useState, useEffect } from "react";
 import FilmCard from "pages/FilmsPage/components/FilmCard";
 import Message from "components/Message";
+import { useStateFilms, useLoadFilms } from "contexts/FilmContext";
+import { FullSpinner } from "styles/app";
 
-const FilmsList = ({ films }) => {
+const FilmsList = () => {
+  const [loading, setLoading] = useState(true);
+  const loadFilms = useLoadFilms();
+  const films = useStateFilms();
+
+  useEffect(() => {
+    async function load() {
+      await loadFilms();
+      setLoading(false);
+    }
+    load();
+  }, [loadFilms]);
+
+  if (loading) {
+    return <FullSpinner />;
+  }
+
   return (
     <div className="ui four cards">
       {films.length === 0 ? (
@@ -13,10 +30,6 @@ const FilmsList = ({ films }) => {
       )}
     </div>
   );
-};
-
-FilmsList.propTypes = {
-  films: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 FilmsList.defaultProps = {

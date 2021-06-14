@@ -1,15 +1,15 @@
-import { useContext } from "react";
 import PropTypes from "prop-types";
-import FilmContext from "contexts/FilmContext";
+import { useToggleFeatured } from "contexts/FilmContext";
 
 const Featured = ({ film }) => {
-  const { toggleFeatured } = useContext(FilmContext);
+  const toggle = useToggleFeatured();
+
   const cls = film.featured ? "yellow" : "empty";
 
   return (
     <span
       role="status"
-      onClick={() => toggleFeatured(film._id)}
+      onClick={() => toggle(film._id)}
       className="ui right corner label"
     >
       <i className={`star icon ${cls}`}></i>
