@@ -140,6 +140,7 @@ class FilmForm extends Component {
                   value={data.img}
                   onChange={this.handleStringChange}
                   name="img"
+                  id="img"
                 />
                 {errors.img && <FormMessage>{errors.img}</FormMessage>}
               </div>
