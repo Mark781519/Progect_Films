@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import Featured from "components/Featured";
 import FilmCardButtons from "pages/FilmsPage/components/FilmCardButtons";
@@ -8,8 +9,10 @@ const FilmCard = ({ film }) => {
   const user = useUserState();
 
   const actionUser = (
-    <div class="extra content">
-      <span className="ui green basic button">Film</span>
+    <div className="extra content">
+      <Link to={`/film/${film._id}`}>
+        <span className="ui green basic button">Film</span>
+      </Link>
     </div>
   );
 
