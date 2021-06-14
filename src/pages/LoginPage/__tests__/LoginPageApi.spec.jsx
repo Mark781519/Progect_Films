@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import LoginPage from "pages/LoginPage";
 import { UserContextProvider } from "contexts/UserContext";
-import users from "test/user";
+import users from "test/users";
 
 const fakeData = { email: "test@com.ua", password: "secret" };
 const mockToken = users[0].token;
