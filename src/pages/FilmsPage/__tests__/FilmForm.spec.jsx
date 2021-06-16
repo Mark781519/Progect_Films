@@ -1,8 +1,23 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter as Router } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import FilmForm from "pages/FilmsPage/components/FilmForm";
-import { AppProviders } from "contexts";
+import { UserContextProvider } from "contexts/UserContext";
 import films from "test/films";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { queryConfig } from "contexts";
+import * as funcs from "hooks/films";
+
+function wrapper({ children }) {
+  const queryClient = new QueryClient(queryConfig);
+  return (
+    <Router>
+      <QueryClientProvider client={queryClient}>
+        <UserContextProvider>{children}</UserContextProvider>
+      </QueryClientProvider>
+    </Router>
+  );
+}
 
 const mockUserState = { token: "12345", role: "admin" };
 jest.mock("contexts/UserContext", () => ({
@@ -16,17 +31,9 @@ jest.mock("react-router-dom", () => ({
   useHistory: () => mockHistory,
 }));
 
-const mockFilm = films[0];
-const mockSaveFilm = jest.fn();
-jest.mock("contexts/FilmContext", () => ({
-  ...jest.requireActual("contexts/FilmContext"),
-  useStateFilm: () => mockFilm,
-  useSaveFilm: () => mockSaveFilm,
-}));
-
 test("FilmForm should render correct", async () => {
   mockSaveFilm.mockImplementation(() => Promise.resolve(mockFilm));
-  render(<FilmForm />, { wrapper: AppProviders });
+  render(<FilmForm />, { wrapper });
 
   userEvent.type(screen.getByLabelText(/title/i), mockFilm.title);
   userEvent.type(screen.getByLabelText(/image/i), mockFilm.img);
@@ -45,7 +52,7 @@ test("FilmForm should render correct", async () => {
 });
 
 test("should render FormMessage when error", async () => {
-  render(<FilmForm />, { wrapper: AppProviders });
+  render(<FilmForm />, { wrapper });
 
   userEvent.type(screen.getByLabelText(/title/i), null);
   userEvent.type(screen.getByLabelText(/image/i), mockFilm.img);

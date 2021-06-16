@@ -3,9 +3,20 @@ import {
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
-import { AppProviders } from "contexts";
+import { MemoryRouter as Router } from "react-router-dom";
 import FilmsPage from "pages/FilmsPage";
 import { server, rest } from "test/server";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { queryConfig } from "contexts";
+
+function wrapper({ children }) {
+  const queryClient = new QueryClient(queryConfig);
+  return (
+    <Router>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Router>
+  );
+}
 
 const mockUserState = { token: "12345", role: "admin" };
 
@@ -15,7 +26,7 @@ jest.mock("contexts/UserContext", () => ({
 }));
 
 test("should render admin buttons", async () => {
-  render(<FilmsPage />, { wrapper: AppProviders });
+  render(<FilmsPage />, { wrapper });
   await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i));
   expect(screen.queryByTestId("admin-buttons")).toBeInTheDocument();
 });
@@ -26,7 +37,7 @@ test("should render spinner", async () => {
       return res(ctx.json({ films: [] }));
     })
   );
-  render(<FilmsPage />, { wrapper: AppProviders });
+  render(<FilmsPage />, { wrapper });
   await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i));
   expect(screen.queryByLabelText("message")).toBeInTheDocument();
 });

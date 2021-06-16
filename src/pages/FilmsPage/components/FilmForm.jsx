@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useHistory, Redirect } from "react-router-dom";
-import _find from "lodash/find";
 import UploadImage from "components/UploadImage";
 import FormMessage from "components/FormMessage";
 import setFormObj from "components/FormUtils";
-import { useStateFilms, useSaveFilm } from "contexts/FilmContext";
 import { useUserState } from "contexts/UserContext";
+import { useSaveFilm, useEditFilm } from "hooks/films";
 
 const initialData = {
   _id: null,
@@ -21,26 +20,23 @@ const initialData = {
 const FilmForm = (props) => {
   const [data, setData] = useState(initialData);
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
 
   const history = useHistory();
   const { _id } = useParams();
 
-  const films = useStateFilms();
-  const saveFilm = useSaveFilm();
   const user = useUserState();
-
   const isAdmin = user.token && user.role === "admin";
 
+  const film = useEditFilm(_id);
+
   useEffect(() => {
-    const film = _find(films, { _id }) || {};
     if (film._id && film._id !== data._id) {
       setData(film);
     }
     if (!film._id && data._id) {
       setData(initialData);
     }
-  }, [_id, data._id, films]);
+  }, [_id, data._id, film]);
 
   const updatePhoto = (img) => {
     setData((data) => ({ ...data, img }));
@@ -63,19 +59,16 @@ const FilmForm = (props) => {
     return errors;
   };
 
+  const mutation = useSaveFilm(data);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const errors = validate(data);
     setErrors(errors);
 
     if (Object.keys(errors).length === 0) {
-      setLoading(true);
-      saveFilm(data)
-        .then(() => history.push("/films"))
-        .catch((err) => {
-          setErrors(err.response.data.errors);
-          setLoading(false);
-        });
+      mutation.mutate(data);
+      history.push("/films");
     }
   };
 
@@ -84,11 +77,7 @@ const FilmForm = (props) => {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      aria-label="film-form"
-      className={`ui form ${loading ? "loading" : ""}`}
-    >
+    <form onSubmit={handleSubmit} aria-label="film-form" className="ui form">
       <div className="ui grid mb-3">
         {/* two column START */}
         <div className="two column row">
